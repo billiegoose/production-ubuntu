@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/wmhilton/BashCMT
+	branch = master
+	commit = 9250f06aad7e162ce9bb458fc188e7686f5ec627
+	parent = 5db7f763a0bcd92b075623e455e79b857e062565
+	cmdver = 0.3.0
