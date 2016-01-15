@@ -3,7 +3,7 @@ set -eu
 # This script uses the Bash Configuration Management Tool (written by me).
 # Its one requirement is that 'include' is in the $PATH.
 ln -sf /vagrant/setup/BashCMT/include /usr/bin/include
-. include apt user swap
+. include "apt" "user" "swap" "csf"
 # CD to the script directory
 cd $(dirname $(readlink -f "$BASH_SOURCE"))
 # Import config variables
@@ -14,7 +14,7 @@ echo "Hello world" > hello_world.txt
 # Initial Setup
 
 ## System Updates (http://hardenubuntu.com/initial-setup/system-updates)
-apt.upgrade_all
+apt.upgrade_all >/dev/null
 apt.unattended-upgrades.is.enabled
 ## Create a New User (http://hardenubuntu.com/initial-setup/create-new-user)
 user.is.added user
@@ -26,9 +26,12 @@ user.is.added user
 # Server Setup
 
 ## Add swap  http://hardenubuntu.com/server-setup/add-swap
-echo "SWAP_SIZE=$SWAP_SIZE"
 swap.is.size "$SWAP_SIZE"
 
+csf.is.installed
+csf.ports.allowed "$OPEN_PORTS"
+csf.ping.set "$PING"
+csf -q
 
 # Prove that we finished
 echo "Goodbye world" > goodbye_world.txt
