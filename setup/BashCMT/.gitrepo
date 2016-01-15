@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://github.com/wmhilton/BashCMT
 	branch = master
-	commit = bd462143b326d274a60cd3369ac69eb50e3afa56
-	parent = 057862053c0badcd57149c7e939578ade0b3a7d4
+	commit = 3dbbd913963fac7f64cd8402f7cd488bb9312392
+	parent = dbd494a6026b24bfa70b28e12cc07c24c6308de1
 	cmdver = 0.3.0
