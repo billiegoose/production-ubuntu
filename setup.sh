@@ -21,6 +21,8 @@ user.is.added user
 #usermod -a -G sudo node
 ## Disable root account (http://hardenubuntu.com/initial-setup/disable-root-account/)
 ## Install Tools (http://hardenubuntu.com/initial-setup/install-tools/)
+apt.is.installed unzip
+apt.is.installed htop
 ## Disable Shell Accounts (http://hardenubuntu.com/initial-setup/disable-shell-accounts/)
 
 # Server Setup
@@ -37,6 +39,10 @@ csf -r >/dev/null
 if [[ "$EXTRAS" == "nodejs" ]]; then
   . "./extras/nodejs.sh"
   install_nodejs 5.2.0
+fi
+
+if [[ -f "./private/install_app.sh" ]]; then
+  ./private/install_app.sh
 fi
 
 # Prove that we finished
