@@ -34,11 +34,9 @@ csf.ping.set "$PING"
 csf -r >/dev/null
 
 ## Install nodejs
-if ! which node ; then
-  file.is.downloaded https://nodejs.org/dist/v5.2.0/node-v5.2.0-linux-x64.tar.xz /tmp/node.tar.xz
-  tar.is.extracted '/tmp/node.tar.xz' /opt
-  ln -s /opt/node-v5.2.0-linux-x64/bin/node /usr/bin/node
-  ln -s /opt/node-v5.2.0-linux-x64/bin/npm /usr/bin/npm
+if [[ "$EXTRAS" == "nodejs" ]]; then
+  . "extras/nodejs.sh"
+  install_nodejs 5.2.0
 fi
 
 # Prove that we finished
