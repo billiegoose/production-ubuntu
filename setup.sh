@@ -35,7 +35,7 @@ csf -r >/dev/null
 
 ## Install nodejs
 if [[ "$EXTRAS" == "nodejs" ]]; then
-  . "extras/nodejs.sh"
+  . "./extras/nodejs.sh"
   install_nodejs 5.2.0
 fi
 
