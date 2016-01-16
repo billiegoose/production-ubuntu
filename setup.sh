@@ -31,7 +31,7 @@ swap.is.size "$SWAP_SIZE"
 csf.is.installed
 csf.ports.allowed "$OPEN_PORTS"
 csf.ping.set "$PING"
-csf -q
+csf -r >/dev/null
 
 # Prove that we finished
 echo "Goodbye world" > goodbye_world.txt
