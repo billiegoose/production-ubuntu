@@ -3,7 +3,7 @@ set -eu
 # This script uses the Bash Configuration Management Tool (written by me).
 # Its one requirement is that 'include' is in the $PATH.
 ln -sf /vagrant/setup/BashCMT/include /usr/bin/include
-. include "apt" "user" "swap" "csf"
+. include "apt" "user" "swap" "csf" "file" "tar"
 # CD to the script directory
 cd $(dirname $(readlink -f "$BASH_SOURCE"))
 # Import config variables
@@ -32,6 +32,14 @@ csf.is.installed
 csf.ports.allowed "$OPEN_PORTS"
 csf.ping.set "$PING"
 csf -r >/dev/null
+
+## Install nodejs
+if ! which node ; then
+  file.is.downloaded https://nodejs.org/dist/v5.2.0/node-v5.2.0-linux-x64.tar.xz /tmp/node.tar.xz
+  tar.is.extracted '/tmp/node.tar.xz' /opt
+  ln -s /opt/node-v5.2.0-linux-x64/bin/node /usr/bin/node
+  ln -s /opt/node-v5.2.0-linux-x64/bin/npm /usr/bin/npm
+fi
 
 # Prove that we finished
 echo "Goodbye world" > goodbye_world.txt
