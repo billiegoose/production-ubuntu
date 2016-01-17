@@ -41,9 +41,5 @@ if [[ "$EXTRAS" == "nodejs" ]]; then
   install_nodejs 5.2.0
 fi
 
-if [[ -f "./private/install_app.sh" ]]; then
-  ./private/install_app.sh
-fi
-
 # Prove that we finished
 echo "Goodbye world" > goodbye_world.txt

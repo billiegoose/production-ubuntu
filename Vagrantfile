@@ -1,5 +1,3 @@
-
-
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -29,6 +27,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "shell" do |s|
     s.inline = "sudo bash /vagrant/setup.sh"
+  end
+
+  config.vm.provision "shell" do |s|
+    s.inline = "sudo GITHUB_TOKEN=#{ENV['GITHUB_TOKEN']} GITHUB_REF=#{ENV['GITHUB_REF']} /vagrant/private/install_app.sh"
   end
 
   config.vm.post_up_message = "
