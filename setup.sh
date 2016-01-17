@@ -27,7 +27,7 @@ apt.is.installed htop
 
 # Server Setup
 
-## Add swap  http://hardenubuntu.com/server-setup/add-swap
+## Add swap (http://hardenubuntu.com/server-setup/add-swap)
 swap.is.size "$SWAP_SIZE"
 
 csf.is.installed
@@ -35,11 +35,16 @@ csf.ports.allowed "$OPEN_PORTS"
 csf.ping.set "$PING"
 csf -r >/dev/null
 
-## Install nodejs
-if [[ "$EXTRAS" == "nodejs" ]]; then
-  . "./extras/nodejs.sh"
-  install_nodejs 5.2.0
-fi
+# Port forwarding
+apt.is.installed rinetd
+file.has.line "0.0.0.0 80  127.0.0.1 8080" "0.0.0.0 80  127.0.0.1 8080" /etc/rinetd.conf
+file.has.line "0.0.0.0 443 127.0.0.1 4433" "0.0.0.0 443 127.0.0.1 4433" /etc/rinetd.conf
+
+## Install extras
+for extra in $EXTRAS; do
+  echo "Installing extra: $extra"
+  "./extras/$extra/install.sh"
+done
 
 # Prove that we finished
 echo "Goodbye world" > goodbye_world.txt

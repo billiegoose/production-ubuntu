@@ -1,8 +1,13 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # My apologies for putting config into a shell script.
+  File.foreach( 'config.sh' ) do |line|
+    key, val = line.split('=')
+    config.vm.hostname = val if key == "HOSTNAME"
+  end
+
   config.vm.box = "ubuntu/trusty64"
-  config.vm.hostname = "server1"
   config.vm.network :private_network, ip: "192.168.0.10"
 
   # Tip: Run 'vagrant plugin install vagrant-vbguest'
@@ -29,11 +34,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.inline = "sudo bash /vagrant/setup.sh"
   end
 
-  config.vm.provision "shell" do |s|
-    s.inline = "sudo GITHUB_TOKEN=#{ENV['GITHUB_TOKEN']} GITHUB_REF=#{ENV['GITHUB_REF']} /vagrant/private/install_app.sh"
-  end
+  #config.vm.provision "shell" do |s|
+  #  s.inline = "GITHUB_TOKEN=#{ENV['GITHUB_TOKEN']} GITHUB_REF=#{ENV['GITHUB_REF']} /vagrant/private/install_app.sh"
+  #end
 
   config.vm.post_up_message = "
-  For instructions, see the documentation on https://github.com/wmhilton/production-ubuntu
+  If you are lucky, I might have some documentation on https://github.com/wmhilton/production-ubuntu.
+  No promises though.
   "
 end
