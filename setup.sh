@@ -2,7 +2,7 @@
 set -eu
 # This script uses the Bash Configuration Management Tool (written by me).
 # Its one requirement is that 'include' is in the $PATH.
-ln -sf /vagrant/setup/BashCMT/include /usr/bin/include
+ln -sf /vagrant/decshell/include /usr/bin/include
 . include "apt" "user" "swap" "csf" "file" "tar"
 # CD to the script directory
 cd $(dirname $(readlink -f "$BASH_SOURCE"))
