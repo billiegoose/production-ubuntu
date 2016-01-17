@@ -33,7 +33,7 @@ swap.is.size "$SWAP_SIZE"
 csf.is.installed
 csf.ports.allowed "$OPEN_PORTS"
 csf.ping.set "$PING"
-csf -r >/dev/null
+(set -x; csf -r >/dev/null)
 
 # Port forwarding
 apt.is.installed rinetd

@@ -51,7 +51,10 @@ function file.is.present() {
   args.assert.single  "$@"
   file_name="$1"
   if file.assert.absent "$file_name" ; then
-    touch "$file_name"
+    if [[ -h "$file_name" ]]; then
+      (set -x; unlink "$file_name")
+    fi
+    (set -x; touch "$file_name")
   fi
   file.assert.present "$file_name"
 }
@@ -59,7 +62,7 @@ function file.is.absent() {
   args.assert.single  "$@"
   file_name="$1"
   if file.assert.present "$file_name" ; then
-    rm -f "$file_name"
+    (set -x; rm -f "$file_name")
   fi
   file.assert.absent "$file_name"
 }
@@ -68,13 +71,13 @@ function file.is.downloaded() {
   local URL="$1"
   local FILE="$2"
   if ! file.assert.present "$FILE" ; then
-    wget -O "$FILE" --progress=dot "$URL"
+    (set -x; wget -O "$FILE" --quiet "$URL")
   fi
   file.assert.present "$FILE"
 }
 function file.has.perms() {
   if ! file.assert.perms "$1" "$2" ; then
-    chmod "$1" "$2"
+    (set -x; chmod "$1" "$2")
   fi
   file.assert.perms "$1" "$2"
 }
@@ -99,4 +102,13 @@ function file.has.line() {
     (set -x; echo "$LINE" >> "$FILE")
   fi
   file.assert.line "$LINE" "$FILE"
+}
+function file.has.contents() {
+  args.assert.single "$@"
+  local FILE="$1"
+  local CONTENTS=$(cat)
+  file.is.present "$FILE"
+  if ! diff - "$FILE" <<< "$CONTENTS" >/dev/null; then
+    (set -x; cat <<< "$CONTENTS" > "$FILE")
+  fi
 }
