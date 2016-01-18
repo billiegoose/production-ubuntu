@@ -5,7 +5,7 @@ set -eu
 ln -sf /vagrant/decshell/include /usr/bin/include
 . include "apt" "user" "swap" "csf" "file" "tar"
 # CD to the script directory
-cd $(dirname $(readlink -f "$BASH_SOURCE"))
+cd /vagrant #cd $(dirname $(readlink -f "$BASH_SOURCE"))
 # Import config variables
 . config.sh
 # Test that this is working
@@ -43,6 +43,7 @@ file.has.line "0.0.0.0 443 127.0.0.1 4433" "0.0.0.0 443 127.0.0.1 4433" /etc/rin
 ## Install extras
 for extra in $EXTRAS; do
   echo "Installing extra: $extra"
+  cd /vagrant
   "./extras/$extra/install.sh"
 done
 

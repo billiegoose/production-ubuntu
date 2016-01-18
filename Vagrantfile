@@ -30,13 +30,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     provider.private_networking = true
   end
 
-  config.vm.provision "shell" do |s|
+  config.vm.provision "os", type: "shell" do |s|
     s.inline = "sudo bash /vagrant/setup.sh"
   end
 
-  #config.vm.provision "shell" do |s|
-  #  s.inline = "GITHUB_TOKEN=#{ENV['GITHUB_TOKEN']} GITHUB_REF=#{ENV['GITHUB_REF']} /vagrant/private/install_app.sh"
-  #end
+  config.vm.provision "app", type: "shell" do |s|
+    s.inline = "GITHUB_TOKEN=#{ENV['GITHUB_TOKEN']} GITHUB_REF=#{ENV['GITHUB_REF']} /vagrant/private/install_app.sh"
+  end
 
   config.vm.post_up_message = "
   If you are lucky, I might have some documentation on https://github.com/wmhilton/production-ubuntu.

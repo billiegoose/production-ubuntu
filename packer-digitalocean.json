@@ -1,15 +1,31 @@
-{
-"variables": {
-  "api_token": "{{env `DIGITALOCEAN_TOKEN`}}"
-},
-"builders": [{
-  "type": "digitalocean",
-  "api_token": "{{user `api_token`}}",
-  "image": "ubuntu-14-04-x64",
-  "region": "nyc2",
-  "size": "512mb",
-  "private_networking": true,
-  "snapshot_name": "base-system {{isotime \"2006-01-02 03:04:05pm\"}}",
-  "communicator": "ssh"
-  }]
+{ "variables":
+  { "api_token": "{{env `DIGITALOCEAN_TOKEN`}}"
+  }
+, "builders":
+  [
+    { "type": "digitalocean"
+    , "api_token": "{{user `api_token`}}"
+    , "image": "ubuntu-14-04-x64"
+    , "region": "nyc2"
+    , "size": "512mb"
+    , "private_networking": true
+    , "snapshot_name": "base-system {{isotime \"2006-01-02 03:04:05pm\"}}"
+    , "communicator": "ssh"
+    }
+  ]
+, "provisioners":
+  [
+    { "type": "shell"
+    , "inline": ["mkdir /vagrant"]
+    }
+  ,
+    { "type": "file"
+    , "source": "."
+    , "destination": "/vagrant"
+    }
+  ,
+    { "type": "shell"
+    , "script": "setup.sh"
+    }
+  ]
 }
