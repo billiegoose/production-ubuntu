@@ -1,13 +1,7 @@
 #! /usr/bin/env bash
 DIR=$(dirname $(readlink -f "$BASH_SOURCE"))
-BASH_INCLUDES=${BASH_INCLUDES:-'include'}
 for library in "$@"
 do
-  if ! grep "$library" <<< "$BASH_INCLUDES" >/dev/null ; then
-    #echo including "$DIR/$library"
-    BASH_INCLUDES="$BASH_INCLUDES:$library"
+    echo including "$DIR/$library"
     source "$DIR/$library"
-  #else
-    #echo "already have $library"
-  fi
 done
