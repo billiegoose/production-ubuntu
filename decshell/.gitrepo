@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://github.com/wmhilton/decshell
 	branch = master
-	commit = 5d4f1e31fdef6b1426396f3842f323185f9ad58e
-	parent = 67e0ae073ffd6254095c77f7ffe7bc0786335d12
+	commit = 3dbbd913963fac7f64cd8402f7cd488bb9312392
+	parent = dbd494a6026b24bfa70b28e12cc07c24c6308de1
 	cmdver = 0.3.0
