@@ -4,7 +4,7 @@
 ; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
 ;
 [subrepo]
-	remote = https://github.com/wmhilton/BashCMT
+	remote = https://github.com/wmhilton/decshell
 	branch = master
 	commit = 3dbbd913963fac7f64cd8402f7cd488bb9312392
 	parent = dbd494a6026b24bfa70b28e12cc07c24c6308de1
