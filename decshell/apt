@@ -8,8 +8,12 @@
 function apt.assert.exists() {
   args.assert.single "$@"
   if [[ $(apt-cache search "^$1$" | wc -l) -ne 1 ]]; then
-    echo "FACT: Package '$1' does not exist (according to apt-cache search)"
-    return 2
+    # Really? Let's refresh and make sure
+    apt.update force
+    if [[ $(apt-cache search "^$1$" | wc -l) -ne 1 ]]; then
+      echo "Package '$1' does not exist (according to apt-cache search)"
+      return 2
+    fi
   fi
 }
 
@@ -36,7 +40,7 @@ function apt.assert.installed() {
   args.assert.single  "$@"
   result=($(dpkg-query --status "$1" 2>/dev/null | grep -w "^Status:" ))
   if ! [[ ${#result[@]} -ge 2 && ${result[1]} == "install" ]]; then
-    echo "FACT: Package '$1' is not installed (according to dpkg-query --status)"
+    echo "Package '$1' is not installed (according to dpkg-query --status)"
     return 2
   fi
 }
@@ -53,10 +57,10 @@ function apt.is.installed() {
     for package_name in ${packages[@]} ; do
       echo "$package_name"
       # If an error is encountered during installation...
-      if ! sudo apt-get install -y "$package_name"; then
+      if ! apt-get install -y "$package_name"; then
         # Update keys and cache and retry
         apt.update force
-        sudo apt-get install -y "$package_name"
+        apt-get install -y "$package_name"
       fi
       apt.assert.installed "$package_name"
     done
