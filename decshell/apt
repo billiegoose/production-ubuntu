@@ -7,85 +7,90 @@
 
 function apt.assert.exists() {
   args.assert.single "$@"
-  if [[ $(apt-cache search --names-only "^$1$" | wc -l) -ne 1 ]]; then
+  if [[ $(apt-cache showpkg "$1" | wc -l) -lt 2 ]]; then
     # Really? Let's refresh and make sure
-    apt.update force
-    if [[ $(apt-cache search --names-only "^$1$" | wc -l) -ne 1 ]]; then
-      echo "Package '$1' does not exist (according to apt-cache search)"
+    apt.cache.update force
+    if [[ $(apt-cache showpkg "$1" | wc -l) -lt 2 ]]; then
       return 2
     fi
   fi
 }
+function apt.assert.installed() {
+  args.assert.single  "$@"
+  result=($(dpkg-query --status "$1" 2>/dev/null | grep -w "^Status:" ))
+  if ! [[ ${#result[@]} -ge 2 && ${result[1]} == "install" ]]; then
+    return 2
+  fi
+}
+function apt.assert.removed() {
+  ! apt.assert.installed "$@"
+}
 
-function apt.update() {
+
+function apt.what_provides() { # Useful but not sure what to do with it
+  args.assert.single "$@"
+  file=$(which "$1")
+  dpkg -S "$file" | sed 's/:.*$//'
+}
+function apt.cache.assert.stale() { # uses a TTL of 24 hours
+  return $(( $(date +%s) - $(stat -c %Y /var/cache/apt) < 24*60*60 ))
+}
+function apt.cache.update() {
   if apt.cache.assert.stale || [[ "$#" -ne 0 ]] && [[ "$1" == "force" ]]; then
     sudo apt-key update           # Update signing keys (to prevent errors)
     sudo apt-get update           # Update package cache
   fi
 }
-
+function apt.cache.clean() {
+  sudo apt-get clean -y         # Empty the package cache to save disk space.
+}
 function apt.upgrade_all() {
-  apt.update
+  apt.cache.update
   sudo apt-get dist-upgrade -y  # Ensure all packages are at the latest version.
                                 # dist-upgrade may remove packages to resolve conflicts but that's OK here
   sudo apt-get autoremove -y    # Remove old packages no longer needed
   sudo apt-get autoclean -y     # Remove deprecated archives from the package cache
 }
-
-function apt.clean_cache() {
-  sudo apt-get clean            # Empty the package cache to save disk space.
-}
-
-function apt.assert.installed() {
-  args.assert.single  "$@"
-  result=($(dpkg-query --status "$1" 2>/dev/null | grep -w "^Status:" ))
-  if ! [[ ${#result[@]} -ge 2 && ${result[1]} == "install" ]]; then
-    echo "Package '$1' is not installed (according to dpkg-query --status)"
-    return 2
+function apt._install() {
+  args.assert.single "$@"
+  local PACKAGE="$1"
+  # If an error is encountered during installation...
+  if ! (set -x; apt-get install -y "$PACKAGE") ; then
+    # Update keys and cache and retry
+    apt.cache.update force
+    (set -x; apt-get install -y "$PACKAGE")
   fi
+  apt.assert.installed "$PACKAGE"
+}
+function apt._missing_packages() {
+  packages=()
+  for PACKAGE in "$@" ; do
+    if apt.assert.exists "$PACKAGE" ; then
+      if ! apt.assert.installed "$PACKAGE" ; then
+        echo "$PACKAGE"
+      fi
+    else
+      >&2 echo "Package '$1' does not exist (according to apt-cache search)"
+      return 1
+    fi
+  done
 }
 
 function apt.is.installed() {
-  packages=()
-  for package_name in "$@"; do
-    if apt.assert.removed "$package_name" ; then
-      apt.assert.exists "$package_name"
-      packages+=("$package_name")
-    fi
-  done
-  if [[ ${#packages[@]} > 0 ]]; then
-    for package_name in ${packages[@]} ; do
-      echo "$package_name"
-      # If an error is encountered during installation...
-      if ! apt-get install -y "$package_name"; then
-        # Update keys and cache and retry
-        apt.update force
-        apt-get install -y "$package_name"
-      fi
-      apt.assert.installed "$package_name"
+  if packages=$(apt._missing_packages "$@") ; then
+    for PACKAGE in $packages ; do
+      apt._install "$PACKAGE"
     done
   fi
 }
-
-function apt.assert.removed() {
-  ! apt.assert.installed "$@"
-}
-
 function apt.is.removed() {
-  packages=()
-  for package_name in "$@"; do
-    if apt.assert.installed "$package_name" ; then
-      packages+=("$package_name")
+  for PACKAGE in "$@"; do
+    if apt.assert.installed "$PACKAGE" ; then
+      sudo apt-get remove -y $package
+      apt.assert.removed "$PACKAGE"
     fi
   done
-  if [[ ${#packages[@]} > 0 ]]; then
-    sudo apt-get remove -y "${packages[@]}"
-    for package_name in ${packages[@]}; do
-      apt.assert.removed "$package_name"
-    done
-  fi
 }
-
 function apt.unattended-upgrades.is.enabled() {
   apt.is.installed unattended-upgrades
   echo 'unattended-upgrades unattended-upgrades/enable_auto_updates boolean true' | sudo debconf-set-selections
@@ -98,15 +103,4 @@ function apt.unattended-upgrades.is.disabled() {
     sudo dpkg-reconfigure unattended-upgrades -f noninteractive
   fi
   apt.is.removed unattended-upgrades
-}
-
-# Useful but not sure what to do with it
-function what_provides() {
-  args.assert.single "$@"
-  file=$(which "$1")
-  dpkg -S "$file" | sed 's/:.*$//'
-}
-
-function apt.cache.assert.stale() {
-  return $(( $(date +%s) - $(stat -c %Y /var/cache/apt) < 24*60*60 ))
 }

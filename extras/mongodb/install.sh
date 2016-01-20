@@ -70,6 +70,7 @@ function mongodb.has.user() {
 }
 
 function mongodb.install() {
+  set -x
   local BIND_IP="$1"
   local DB_NAME="$2"
   local ADMIN_PWD="$3"
@@ -78,7 +79,6 @@ function mongodb.install() {
   file.has.contents "/etc/apt/sources.list.d/mongodb-org-3.2.list" <<<'
   deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse
   '
-  apt.update
   apt.is.installed mongodb-org
 
   # Note: This could potentially disrupt existing connections, but the downtime
