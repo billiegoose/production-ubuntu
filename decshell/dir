@@ -16,6 +16,10 @@ function dir.assert.absent() {
   args.assert.single  "$@"
   ! dir.assert.present "$1"
 }
+function dir.assert.clean() {
+  args.assert.single  "$@"
+  test "$(ls -a $1 | wc -l)" == "2" # Only . and ..
+}
 
 function dir.is.present() {
   args.assert.single  "$@"
@@ -32,4 +36,11 @@ function dir.is.absent() {
     (set -x; rm -rf "$NAME")
   fi
   dir.assert.absent "$DIR"
+}
+function dir.is.clean() {
+  args.assert.single "$@"
+  local NAME="$1"
+  if ! dir.assert.clean "$NAME"; then
+    (set -x; cd "$NAME"; rm -rf * .[^.]*)
+  fi
 }

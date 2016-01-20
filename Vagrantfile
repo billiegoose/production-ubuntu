@@ -3,6 +3,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # My apologies for putting config into a shell script.
   File.foreach( 'config.sh' ) do |line|
+    line = line.strip()
     key, val = line.split('=')
     config.vm.hostname = val if key == "HOSTNAME"
   end
@@ -24,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     provider.token = ENV['DIGITALOCEAN_TOKEN']
     provider.image = "ubuntu-14-04-x64"
-    provider.region = "nyc3"
+    #provider.region = "nyc3"
     provider.size = '512mb'
     provider.name = 'hardened-ubuntu'
     provider.private_networking = true
