@@ -1,13 +1,25 @@
 #! /usr/bin/env bash
+. include dir
 
 function github.download() {
   local USER="$1"
   local REPO="$2"
   local REF="$3"
   local LOCATION="$4"
-  rm -rf "$LOCATION"
-  mkdir -p "$LOCATION"
+  dir.is.present "$LOCATION"
+  rm -rf "$LOCATION"/*
   cd "$LOCATION"
   curl -sSH "Authorization: token $GITHUB_TOKEN" -L "https://api.github.com/repos/$USER/$REPO/tarball/$REF" | tar -xz
-  mv */* .
+  if [[ $(ls | wc -l) == "1" ]]; then
+    subdir=$(ls)
+    if [[ -d "$subdir" ]]; then
+      cd "$subdir"
+      mv * .[^.]* ..
+      cd ..
+    fi
+    if ! rmdir "$subdir"; then
+      echo # So right now, if $subdir has a folder itself called $subdir
+      # then we're screwed.
+    fi
+  fi
 }

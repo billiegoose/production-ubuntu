@@ -31,11 +31,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provision "os", type: "shell" do |s|
-    s.inline = "sudo bash /vagrant/setup.sh"
+    s.inline = "/vagrant/setup.sh"
   end
 
   config.vm.provision "app", type: "shell" do |s|
-    s.inline = "GITHUB_TOKEN=#{ENV['GITHUB_TOKEN']} GITHUB_REF=#{ENV['GITHUB_REF']} /vagrant/private/install_app.sh"
+    s.inline = "GITHUB_TOKEN=#{ENV['GITHUB_TOKEN']} GITHUB_REF=#{ENV['GITHUB_REF']} /vagrant/private/install.sh"
   end
 
   config.vm.post_up_message = "

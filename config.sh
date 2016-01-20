@@ -4,7 +4,7 @@ SWAP_SIZE=2G
 # SSH, DNS, HTTP, TLS, Consul (Server RPC, SerfLan, SerfWan, CLI RPC, HTTP API), MongoDB
 OPEN_PORTS=22,53,80,443,8300,8301,8302,8400,8500,27017
 PING=true
-EXTRAS="nodejs textadept consul mongodb"
+EXTRAS="nodejs textadept consul mongodb tmux"
 NODEJS_VERSION=5.2.0
 NODE_ENV=production
 CONSUL_VERSION=0.5.2
@@ -15,3 +15,4 @@ CONSUL_JOIN=           # override in private/config.sh
 MONGODB_DATABASE=UsersDB
 MONGODB_ADMIN_PASSWORD= # override in private/config.sh
 MONGODB_WWW_PASSWORD=   # override in private/config.sh
+TMUX_VERSION=2.1

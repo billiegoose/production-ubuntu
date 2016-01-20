@@ -7,10 +7,10 @@
 
 function apt.assert.exists() {
   args.assert.single "$@"
-  if [[ $(apt-cache search "^$1$" | wc -l) -ne 1 ]]; then
+  if [[ $(apt-cache search --names-only "^$1$" | wc -l) -ne 1 ]]; then
     # Really? Let's refresh and make sure
     apt.update force
-    if [[ $(apt-cache search "^$1$" | wc -l) -ne 1 ]]; then
+    if [[ $(apt-cache search --names-only "^$1$" | wc -l) -ne 1 ]]; then
       echo "Package '$1' does not exist (according to apt-cache search)"
       return 2
     fi
