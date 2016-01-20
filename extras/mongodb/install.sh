@@ -70,15 +70,13 @@ function mongodb.has.user() {
 }
 
 function mongodb.install() {
-  set -x
   local BIND_IP="$1"
   local DB_NAME="$2"
   local ADMIN_PWD="$3"
   local USER_PWD="$4"
-  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927 &>/dev/null
-  file.has.contents "/etc/apt/sources.list.d/mongodb-org-3.2.list" <<<'
-  deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse
-  '
+  file.has.contents "/etc/apt/sources.list.d/mongodb-org-3.2.list" \
+    <<<'deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse'
+  apt.has.key EA312927
   apt.is.installed mongodb-org
 
   # Note: This could potentially disrupt existing connections, but the downtime

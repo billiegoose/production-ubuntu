@@ -7,25 +7,30 @@
 
 function apt.assert.exists() {
   args.assert.single "$@"
-  if [[ $(apt-cache showpkg "$1" | wc -l) -lt 2 ]]; then
+  local PACKAGE="$1"
+  if [[ $(apt-cache showpkg "$PACKAGE" | wc -l) -lt 2 ]]; then
     # Really? Let's refresh and make sure
     apt.cache.update force
-    if [[ $(apt-cache showpkg "$1" | wc -l) -lt 2 ]]; then
+    if [[ $(apt-cache showpkg "$PACKAGE" | wc -l) -lt 2 ]]; then
+      >&2 echo "Package '$PACKAGE' does not exist (according to apt-cache showpkg)"
       return 2
     fi
   fi
 }
 function apt.assert.installed() {
-  args.assert.single  "$@"
-  result=($(dpkg-query --status "$1" 2>/dev/null | grep -w "^Status:" ))
-  if ! [[ ${#result[@]} -ge 2 && ${result[1]} == "install" ]]; then
+  args.assert.single "$@"
+  local PACKAGE="$1"
+  apt.assert.exists "$PACKAGE"
+  if [[ $(dpkg-query --status "$PACKAGE" 2>/dev/null | grep "Status\b.*\binstall\b" | wc -l) == "0" ]]; then
     return 2
   fi
 }
 function apt.assert.removed() {
   ! apt.assert.installed "$@"
 }
-
+function apt.assert.key() {
+  apt-key list | grep "$1" >/dev/null
+}
 
 function apt.what_provides() { # Useful but not sure what to do with it
   args.assert.single "$@"
@@ -51,44 +56,52 @@ function apt.upgrade_all() {
   sudo apt-get autoremove -y    # Remove old packages no longer needed
   sudo apt-get autoclean -y     # Remove deprecated archives from the package cache
 }
-function apt._install() {
+
+function apt.has.key() {
   args.assert.single "$@"
+  local KEY="$1"
+  if ! apt.assert.key "$KEY" ; then
+    if ! (set -x; apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv "$KEY") ; then
+      apt.cache.update force
+      (set -x; apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv "$KEY")
+    fi
+  fi
+  apt.assert.key "$KEY"
+}
+function apt.is.installed() {
+  if ! args.assert.single "$@" ; then
+    apt.are.installed "$@"
+    return
+  fi
   local PACKAGE="$1"
-  # If an error is encountered during installation...
-  if ! (set -x; apt-get install -y "$PACKAGE") ; then
-    # Update keys and cache and retry
-    apt.cache.update force
-    (set -x; apt-get install -y "$PACKAGE")
+  if ! apt.assert.installed "$PACKAGE" ; then
+    if ! (set -x; apt-get install -y "$PACKAGE") ; then
+      # If an error happens with apt-get install then update keys and cache and retry
+      apt.cache.update force
+      (set -x; apt-get install -y "$PACKAGE")
+    fi
   fi
   apt.assert.installed "$PACKAGE"
 }
-function apt._missing_packages() {
-  packages=()
-  for PACKAGE in "$@" ; do
-    if apt.assert.exists "$PACKAGE" ; then
-      if ! apt.assert.installed "$PACKAGE" ; then
-        echo "$PACKAGE"
-      fi
-    else
-      >&2 echo "Package '$1' does not exist (according to apt-cache search)"
-      return 1
-    fi
+function apt.is.removed() {
+  if ! args.assert.single "$@" ; then
+    apt.are.removed "$@"
+    return
+  fi
+  local PACKAGE="$1"
+  if ! apt.assert.removed "$PACKAGE" ; then
+    sudo apt-get remove -y "$PACKAGE"
+  fi
+  apt.assert.removed "$PACKAGE"
+}
+function apt.are.installed() {
+  for PACKAGE in "$@"; do
+    apt.is.installed "$PACKAGE"
   done
 }
-
-function apt.is.installed() {
-  if packages=$(apt._missing_packages "$@") ; then
-    for PACKAGE in $packages ; do
-      apt._install "$PACKAGE"
-    done
-  fi
-}
-function apt.is.removed() {
+function apt.are.removed() {
   for PACKAGE in "$@"; do
-    if apt.assert.installed "$PACKAGE" ; then
-      sudo apt-get remove -y $package
-      apt.assert.removed "$PACKAGE"
-    fi
+    apt.is.removed "$PACKAGE"
   done
 }
 function apt.unattended-upgrades.is.enabled() {
