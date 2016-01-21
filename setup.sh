@@ -8,8 +8,6 @@ ln -sf /vagrant/decshell/include /usr/bin/include
 cd /vagrant #cd $(dirname $(readlink -f "$BASH_SOURCE"))
 # Import config variables
 . config.sh
-# Test that this is working
-echo "Hello world" > hello_world.txt
 
 # Initial Setup
 
@@ -39,6 +37,7 @@ csf.ping.set "$PING"
 apt.is.installed rinetd
 file.has.line "0.0.0.0 80  127.0.0.1 8080" "0.0.0.0 80  127.0.0.1 8080" /etc/rinetd.conf
 file.has.line "0.0.0.0 443 127.0.0.1 4433" "0.0.0.0 443 127.0.0.1 4433" /etc/rinetd.conf
+(set -x; sudo service rinetd restart)
 
 ## Install extras
 for extra in $EXTRAS; do
@@ -46,6 +45,3 @@ for extra in $EXTRAS; do
   cd /vagrant
   "./extras/$extra/install.sh"
 done
-
-# Prove that we finished
-echo "Goodbye world" > goodbye_world.txt

@@ -35,8 +35,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.inline = "/vagrant/setup.sh"
   end
 
+  # Put your personal app's installer here.
   config.vm.provision "app", type: "shell" do |s|
-    s.inline = "GITHUB_TOKEN=#{ENV['GITHUB_TOKEN']} GITHUB_REF=#{ENV['GITHUB_REF']} /vagrant/private/install.sh"
+    s.inline = "env /vagrant/install.sh"
   end
 
   config.vm.post_up_message = "
