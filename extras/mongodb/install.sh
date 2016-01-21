@@ -104,6 +104,16 @@ function mongodb.install() {
   file.has.line "\bsecurity.authorization\b" "security.authorization: enabled" /etc/mongod.conf
   # Restart mongo
   (set -x; service mongod restart)
+
+  # TODO: Move this somewhere, I dunno
+  file.has.contents "/etc/consul.d/mongo.json" <<CONTENTS
+{ "service":
+  { "name": "mongo"
+  , "port": 27017
+  }
+}
+CONTENTS
+  (set -x; consul reload)
 }
 
 mongodb.install "$MONGODB_BIND" "$MONGODB_DATABASE" "$MONGODB_ADMIN_PASSWORD" "$MONGODB_WWW_PASSWORD"

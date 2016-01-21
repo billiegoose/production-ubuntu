@@ -35,7 +35,7 @@ stop on runlevel [!12345]
 respawn
 setuid consul
 setgid consul
-exec consul agent --config-file /etc/consul.json
+exec consul agent --config-file /etc/consul.json --config-dir /etc/consul.d
 CONTENT
 
   file.has.contents /etc/dnsmasq.d/10-consul <<<"server=/consul/127.0.0.1#8600"
