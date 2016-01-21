@@ -43,7 +43,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Put your personal app's installer here.
   config.vm.provision "app", type: "shell" do |s|
-    s.inline = "env /vagrant/install.sh"
+    s.inline = "#{environ} /vagrant/install.sh"
   end
 
   config.vm.post_up_message = "
