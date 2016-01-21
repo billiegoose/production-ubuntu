@@ -2,11 +2,17 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # My apologies for putting config into a shell script.
+  # Create an environment from the config file
+  environ = "env "
   File.foreach( 'config.sh' ) do |line|
-    line = line.strip()
-    key, val = line.split('=')
-    config.vm.hostname = val if key == "HOSTNAME"
+    key, val = line.sub(/#.*/,'').strip().split('=',2)
+    if not val.nil?
+      environ += "#{key}=#{val} "
+      config.vm.hostname = val if key == "HOSTNAME"
+    end
   end
+  # TODO: Use config file in executor instead of including config.sh in every extra module
+  puts environ
 
   config.vm.box = "ubuntu/trusty64"
   config.vm.network :private_network, ip: "192.168.0.10"
