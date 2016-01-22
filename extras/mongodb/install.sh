@@ -114,7 +114,7 @@ function mongodb.install() {
   }
 }
 CONTENTS
-  (set -x; consul reload)
+  (set -x; service consul restart)
 }
 
 mongodb.install "$MONGODB_BIND" "$MONGODB_DATABASE" "$MONGODB_ADMIN_PASSWORD" "$MONGODB_WWW_PASSWORD"
