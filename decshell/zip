@@ -7,7 +7,6 @@ function zip.is.extracted() {
   args.assert.double "$@"
   local SOURCE="$1"
   local DEST="$2"
-  if ! [[ -e "$DEST" ]]; then
-    (set -x; unzip "$SOURCE" -d "$DEST")
-  fi
+  dir.is.present "$DEST"
+  (set -x; unzip -uo "$SOURCE" -d "$DEST")
 }

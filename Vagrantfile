@@ -5,8 +5,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Create an environment from the config file
   environ = "env "
   File.foreach( 'config.sh' ) do |line|
-    key, val = line.sub(/#.*/,'').strip().split('=',2)
-    if not val.nil?
+    key, val = line.sub(/\s*#.*/,'').strip().split('=',2)
+    if not val.nil? and val != ""
+      environ += "#{key}=#{val} "
+      config.vm.hostname = val if key == "HOSTNAME"
+    end
+  end
+  File.foreach( 'private/config.sh' ) do |line|
+    key, val = line.sub(/\s*#.*/,'').strip().split('=',2)
+    if not val.nil? and val != ""
       environ += "#{key}=#{val} "
       config.vm.hostname = val if key == "HOSTNAME"
     end

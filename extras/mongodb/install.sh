@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. include "apt" "file"
+. include "apt" "file" "dir"
 . config.sh
 . private/config.sh
 
@@ -106,6 +106,7 @@ function mongodb.install() {
   (set -x; service mongod restart)
 
   # TODO: Move this somewhere, I dunno
+  dir.is.present "/etc/consul.d"
   file.has.contents "/etc/consul.d/mongo.json" <<CONTENTS
 { "service":
   { "name": "mongo"

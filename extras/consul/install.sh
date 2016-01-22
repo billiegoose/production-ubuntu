@@ -14,7 +14,6 @@ install_consul() {
   dir.is.present /var/consul
   file.has.owner "consul:consul" /var/consul
   # TODO: Open ports 8300 8301 8203 8400 8500
-  apt.is.installed "dnsmasq"
   file.has.contents /etc/consul.json <<CONTENT
 {
   "bootstrap": $CONSUL_IS_BOOTSTRAP,
@@ -38,6 +37,9 @@ setgid consul
 exec consul agent --config-file /etc/consul.json --config-dir /etc/consul.d
 CONTENT
 
+  apt.is.installed "dnsmasq"
   file.has.contents /etc/dnsmasq.d/10-consul <<<"server=/consul/127.0.0.1#8600"
+  (set +x; service consul restart)
+  (set +x; service dnsmasq restart)
 }
 install_consul "$CONSUL_VERSION"
