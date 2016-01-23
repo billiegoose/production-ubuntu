@@ -2,7 +2,6 @@
 set -eu
 # This script uses the Bash Configuration Management Tool (written by me).
 . include "file" "tar"
-. config.sh
 
 function install_nodejs() {
   local VERSION="$1"

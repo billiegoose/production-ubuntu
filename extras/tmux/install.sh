@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 . include file tar apt
-. config.sh
-. private/config.sh
 
 if ! which tmux || [[ "$(tmux -V)" != "tmux $TMUX_VERSION" ]]; then
   apt.is.installed 'libevent-dev'

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -e
 . include "file" "zip" "dir" "symlink" "user" "apt"
-. config.sh
-. private/config.sh
 
 install_consul() {
   local VERSION="$1"
@@ -22,8 +20,7 @@ install_consul() {
   "data_dir": "/var/consul",
   "encrypt": "$CONSUL_ENCRYPTION_KEY",
   "log_level": "INFO",
-  "enable_syslog": true,
-  "start_join": [ $CONSUL_JOIN ]
+  "enable_syslog": true
 }
 CONTENT
 
@@ -36,7 +33,7 @@ setuid consul
 setgid consul
 exec consul agent --config-file /etc/consul.json --config-dir /etc/consul.d
 CONTENT
-
+  dir.is.present "/etc/consul.d"
   apt.is.installed "dnsmasq"
   file.has.contents /etc/dnsmasq.d/10-consul <<<"server=/consul/127.0.0.1#8600"
   (set +x; service consul restart)

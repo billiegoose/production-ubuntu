@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 . include "apt" "file" "dir"
-. config.sh
-. private/config.sh
 
 function mongodb.assert.user() {
   local USER="$1"
@@ -106,15 +104,17 @@ function mongodb.install() {
   (set -x; service mongod restart)
 
   # TODO: Move this somewhere, I dunno
-  dir.is.present "/etc/consul.d"
-  file.has.contents "/etc/consul.d/mongo.json" <<CONTENTS
+  if [[ "$EXTRAS" == *consul* ]]; then
+    dir.is.present "/etc/consul.d"
+    file.has.contents "/etc/consul.d/mongo.json" <<CONTENTS
 { "service":
   { "name": "mongo"
   , "port": 27017
   }
 }
 CONTENTS
-  (set -x; service consul restart)
+    (set -x; service consul restart)
+  fi
 }
 
 mongodb.install "$MONGODB_BIND" "$MONGODB_DATABASE" "$MONGODB_ADMIN_PASSWORD" "$MONGODB_WWW_PASSWORD"
