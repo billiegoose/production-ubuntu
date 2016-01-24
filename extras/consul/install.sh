@@ -18,6 +18,7 @@ install_consul() {
   file.has.contents /etc/consul.json <<CONTENT
 {
   "bind_addr": "$BIND_ADDRESS",
+  "node_name": "$CONSUL_NODE_NAME",
   "bootstrap": $CONSUL_IS_BOOTSTRAP,
   "server": $CONSUL_IS_SERVER,
   "datacenter": "nyc3",

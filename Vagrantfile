@@ -48,27 +48,38 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # TODO: Use config file in executor instead of including config.sh in every extra module
   puts environ
 
-  config.vm.define "mongo" do |config|
-    config.vm.hostname = "mongo-#{Time.now.getutc.to_i}"
-    config.vm.provision "os", type: "shell" do |s|
-      s.inline = "#{environ} EXTRAS='textadept consul mongodb' /vagrant/setup.sh"
+  e = Hash.new
+  Dir.foreach( "servers" ) do |f|
+    if f != "." and f != ".." and File.directory? "servers/#{f}"
+      puts f
+      e[f] = environ
+      File.foreach( "servers/#{f}/config.sh" ) do |line|
+        key, val = line.sub(/\s*#.*/,'').strip().split('=',2)
+        if not val.nil? and val != ""
+          e[f] += "#{key}=#{val} "
+        end
+      end
+      config.vm.define f do |config|
+        config.vm.hostname = "#{f}-#{Time.now.getutc.to_i}"
+        config.vm.provision "os", type: "shell" do |s|
+          s.inline = "#{e[f]} /vagrant/setup.sh"
+        end
+      end
     end
   end
 
+  puts e
+
   config.vm.define "www" do |config|
-    config.vm.hostname = "www-#{Time.now.getutc.to_i}"
-    config.vm.provision "os", type: "shell" do |s|
-      s.inline = "#{environ} EXTRAS='nodejs textadept consul' /vagrant/setup.sh"
-    end
+
     # Put your personal app's installer here.
     config.vm.provision "app", type: "shell" do |s|
-      s.inline = "#{environ} /vagrant/install.sh"
+      s.inline = "#{e["www"]} /vagrant/install.sh"
     end
 
     # Put your personal app's installer here.
     config.vm.provision "run", type: "shell" do |s|
-      s.inline = "sudo su - user -c '#{environ} npm start'"
+      s.inline = "sudo su - user -c '#{e["www"]} npm start'"
     end
   end
-
 end
