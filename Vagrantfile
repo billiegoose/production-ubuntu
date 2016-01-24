@@ -29,7 +29,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   If you are lucky, I might have some documentation on https://github.com/wmhilton/production-ubuntu.
   No promises though.
   "
-  
+
   # My apologies for putting config into a shell script.
   # Create an environment from the config file
   environ = "env "
@@ -65,10 +65,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       s.inline = "#{environ} /vagrant/install.sh"
     end
 
-    # # Put your personal app's installer here.
-    # config.vm.provision "run", type: "shell" do |s|
-    #   s.inline = "sudo su - user -c '#{environ} npm start'"
-    # end
+    # Put your personal app's installer here.
+    config.vm.provision "run", type: "shell" do |s|
+      s.inline = "sudo su - user -c '#{environ} npm start'"
+    end
   end
 
 end

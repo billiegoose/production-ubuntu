@@ -12,8 +12,12 @@ install_consul() {
   dir.is.present /var/consul
   file.has.owner "consul:consul" /var/consul
   # TODO: Open ports 8300 8301 8203 8400 8500
+  # This is maybe specific to my situation, but eth1 is the "private" network on both Virtualbox and Digital Ocean
+  apt.is.installed moreutils # for ifdata
+  local BIND_ADDRESS=$(ifdata -pa eth1)
   file.has.contents /etc/consul.json <<CONTENT
 {
+  "bind_addr": "$BIND_ADDRESS",
   "bootstrap": $CONSUL_IS_BOOTSTRAP,
   "server": $CONSUL_IS_SERVER,
   "datacenter": "nyc3",
