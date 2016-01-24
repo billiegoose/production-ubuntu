@@ -49,14 +49,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   puts environ
 
   config.vm.define "mongo" do |config|
-    config.vm.hostname = "mongo"
+    config.vm.hostname = "mongo-#{Time.now.getutc.to_i}"
     config.vm.provision "os", type: "shell" do |s|
       s.inline = "#{environ} EXTRAS='textadept consul mongodb' /vagrant/setup.sh"
     end
   end
 
   config.vm.define "www" do |config|
-    config.vm.hostname = "www"
+    config.vm.hostname = "www-#{Time.now.getutc.to_i}"
     config.vm.provision "os", type: "shell" do |s|
       s.inline = "#{environ} EXTRAS='nodejs textadept consul' /vagrant/setup.sh"
     end
