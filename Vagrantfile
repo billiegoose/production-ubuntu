@@ -45,13 +45,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       environ += "#{key}=#{val} "
     end
   end
-  # TODO: Use config file in executor instead of including config.sh in every extra module
-  puts environ
 
   e = Hash.new
   Dir.foreach( "servers" ) do |f|
     if f != "." and f != ".." and File.directory? "servers/#{f}"
-      puts f
       e[f] = environ
       File.foreach( "servers/#{f}/config.sh" ) do |line|
         key, val = line.sub(/\s*#.*/,'').strip().split('=',2)
@@ -68,8 +65,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  puts e
-
   config.vm.define "www" do |config|
 
     # Put your personal app's installer here.
@@ -79,7 +74,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Put your personal app's installer here.
     config.vm.provision "run", type: "shell" do |s|
-      s.inline = "sudo su - user -c '#{e["www"]} npm start'"
+      s.inline = "sudo su - user -c '#{e["www"]} npm launch'"
     end
   end
 end

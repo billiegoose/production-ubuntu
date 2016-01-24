@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-cd /vagrant
-. config.sh
-. private/config.sh
-. include apt
+. include apt symlink
 apt.is.installed libkrb5-dev
 apt.is.installed build-essential
 apt.is.installed git
@@ -14,3 +11,4 @@ if [[ -n "$GITHUB_USER" ]] && [[ -n "$GITHUB_REPO" ]] && [[ -n "$GITHUB_TOKEN" ]
     npm install
 SCRIPT
 fi
+symlink.is.present /home/user/bin/service /etc/init.d/www
