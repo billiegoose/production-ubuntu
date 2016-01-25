@@ -8,7 +8,7 @@ EXTRAS="textadept consul mongodb"
 
 CONSUL_VERSION=0.5.2
 CONSUL_NODE_NAME=mongo
-CONSUL_IS_BOOTSTRAP=true
+CONSUL_BOOTSTRAP_EXPECT=3
 CONSUL_IS_SERVER=true
 CONSUL_ENCRYPTION_KEY= # override in private/config.sh
 CONSUL_JOIN=           # override in private/config.sh

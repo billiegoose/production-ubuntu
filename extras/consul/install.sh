@@ -19,9 +19,8 @@ install_consul() {
 {
   "bind_addr": "$BIND_ADDRESS",
   "node_name": "$CONSUL_NODE_NAME",
-  "bootstrap": $CONSUL_IS_BOOTSTRAP,
+  "bootstrap_expect": $CONSUL_BOOTSTRAP_EXPECT,
   "server": $CONSUL_IS_SERVER,
-  "datacenter": "nyc3",
   "data_dir": "/var/consul",
   "encrypt": "$CONSUL_ENCRYPTION_KEY",
   "log_level": "INFO",

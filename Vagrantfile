@@ -74,7 +74,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Put your personal app's installer here.
     config.vm.provision "run", type: "shell" do |s|
-      s.inline = "sudo su - user -c '#{e["www"]} npm launch'"
+      s.inline = "service www start #{e["www"]}"
     end
   end
 end
