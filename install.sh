@@ -11,4 +11,4 @@ if [[ -n "$GITHUB_USER" ]] && [[ -n "$GITHUB_REPO" ]] && [[ -n "$GITHUB_TOKEN" ]
     npm install
 SCRIPT
 fi
-symlink.is.present /home/user/bin/service /etc/init.d/www
+symlink.is.present /etc/init.d/www /home/user/bin/service
