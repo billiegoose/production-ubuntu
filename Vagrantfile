@@ -46,6 +46,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
+  t = Time.now.getutc.to_i
   e = Hash.new
   Dir.foreach( "servers" ) do |f|
     if f != "." and f != ".." and File.directory? "servers/#{f}"
@@ -57,7 +58,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         end
       end
       config.vm.define f do |config|
-        config.vm.hostname = "#{f}-#{Time.now.getutc.to_i}"
+        config.vm.hostname = "#{f}-#{t}"
         config.vm.provision "os", type: "shell" do |s|
           s.inline = "#{e[f]} /vagrant/setup.sh"
         end
